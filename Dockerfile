@@ -13,7 +13,8 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 # Bundle app source
-COPY ./client/dist/* ./client
-COPY ./backend .
+COPY ./client/dist/* ./client/
+COPY ./backend/* ./
 
 CMD [ "node", "index.mjs" ]
+
