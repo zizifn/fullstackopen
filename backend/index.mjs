@@ -1,3 +1,5 @@
+console.log(`bergin Server running on port ${PORT}`)
+
 import express from 'express';
 import { config } from 'dotenv';
 const app = express()
