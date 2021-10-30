@@ -5,13 +5,23 @@ import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
 import { terser } from 'rollup-plugin-terser';
 import { generateSW } from 'rollup-plugin-workbox';
 import path from 'path';
+function augmentWithDatePlugin() {
+  return {
+    name: 'augment-with-date',
+    augmentChunkHash(chunkInfo) {
+      if (chunkInfo.name === 'foo') {
+        return Date.now().toString();
+      }
+    }
+  };
+}
 
 export default {
   input: 'index.html',
   output: {
-    entryFileNames: '[hash].js',
-    chunkFileNames: '[hash].js',
-    assetFileNames: '[hash][extname]',
+    entryFileNames: `${new Date().getTime()}-[name]-[hash].js`,
+    chunkFileNames: `${new Date().getTime()}-[name]-[hash].js`,
+    assetFileNames: `${new Date().getTime()}-[name]-[hash][extname]`,
     format: 'es',
     dir: 'dist',
   },
