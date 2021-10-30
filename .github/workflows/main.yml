@@ -5,14 +5,17 @@ name: CI
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  # push:
+  #   branches: [ main ]
+  # pull_request:
+  #   branches: [ main ]
 
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    actions:
+      description: "action: deploy/stop/start"
+      default: "deploy"
     inputs:
       env:
         description: "environment: Input the name of Environment. If left blank, the main secrets setting will be used by default."
@@ -20,7 +23,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  build-deploy:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.env || 'QA'}}
@@ -50,16 +53,33 @@ jobs:
           path: |
             ${{ github.workspace }}/client
             !**/node_modules/**/*
-      - uses: akhileshns/heroku-deploy@v3.6.8 # This is the action
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: ${{secrets.APP_NAME}} #Must be unique in Heroku
-          heroku_email: ${{secrets.EMAIL}}
-          usedocker: true
-          docker_build_args: |
-            NODE_ENV
-        env:
-          # 这是为了heroku，注意前缀有个HD，这是为了告诉heroku-deploy，这些变量需要传入到container 中。
-          HD_UUID: ${{ secrets.HEROKU_V2RAY_UUID }} # UUID for v2ray user, 为了安全，一定要放入github action token中
-          NODE_ENV: production
-          SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
+      - name: deloy
+        uses: akhileshns/heroku-deploy@v3.6.8 # This is the action
+          with:
+           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+           heroku_app_name: ${{secrets.APP_NAME}} #Must be unique in Heroku
+           heroku_email: ${{secrets.EMAIL}}
+           usedocker: true
+           docker_build_args: |
+             NODE_ENV
+          env:
+            # 这是为了heroku，注意前缀有个HD，这是为了告诉heroku-deploy，这些变量需要传入到container 中。
+            HD_UUID: ${{ secrets.HEROKU_V2RAY_UUID }} # UUID for v2ray user, 为了安全，一定要放入github action token中
+            NODE_ENV: production
+            SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
+      - name: scale up/down
+        if: ${{ github.event.inputs.actions  == 'start' || github.event.inputs.actions  == 'stop' }}
+        uses: akhileshns/heroku-deploy@v3.7.8 # This is the action
+          with:
+            heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+            heroku_app_name: ${{secrets.APP_NAME}} #Must be unique in Heroku
+            heroku_email: ${{secrets.EMAIL}}
+            justlogin: true
+      - name: build client
+        if: ${{ github.event.inputs.actions  == 'start' || github.event.inputs.actions  == 'stop' }}
+        run: |
+          echo action is ${{ github.event.inputs.actions }}
+          if [[ ${{ github.event.inputs.actions }} == 'stop' ]]; then heroku ps:scale web=0 -a ${{secrets.APP_NAME}} && echo "stop"; fi
+          if [[ ${{ github.event.inputs.actions }} == 'start' ]]; then heroku ps:scale web=1 -a ${{secrets.APP_NAME}} && echo "start"; fi
+          heroku ps -a ${{secrets.APP_NAME}}
+
