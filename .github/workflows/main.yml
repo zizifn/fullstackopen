@@ -47,7 +47,9 @@ jobs:
           # Artifact name
           name: client-artifact
           # A file, directory or wildcard pattern that describes what to upload
-          path: ${{ github.workspace }}/client
+          path: |
+            ${{ github.workspace }}/client
+            !node_modules/**/*
       - uses: akhileshns/heroku-deploy@v3.6.8 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
