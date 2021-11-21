@@ -6,7 +6,8 @@
   "scripts": {
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
     "dev": "nodemon src/index.mjs",
-    "lint": "eslint src/*/*.mjs src/index.mjs"
+    "lint": "eslint src/*/*.mjs src/index.mjs",
+    "start": "node src/index.mjs"
   },
   "repository": {
     "type": "git",
