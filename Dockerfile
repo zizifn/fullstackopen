@@ -18,5 +18,5 @@ RUN npm ci --only=production
 COPY ./client/dist/* ./client/
 COPY ./backend/* ./
 
-CMD [ "node", "src/index.mjs" ]
+CMD [ "npm", "start" ]
 

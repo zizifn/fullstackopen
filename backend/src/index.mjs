@@ -23,7 +23,7 @@ app.use(compression());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(requestLogger);
-app.use(express.static(join(resolve(), 'src', 'client'), {
+app.use(express.static(join(resolve(), 'client'), {
     setHeaders: (res, path) => {
         console.log(path, res.statusCode);
     }
