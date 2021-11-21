@@ -16,11 +16,19 @@
       background-color: #ededed;
     }
   </style>
+  <script>
+    window.process = {
+      env: {
+        NODE_ENV: 'production'
+      }
+    }
+  </script>
   <title>Notes</title>
 </head>
 
 <body>
   <full-stack-open></full-stack-open>
+  <test-element></test-element>
 
   <script type="module" src="./out-tsc/src/full-stack-open.js"></script>
 </body>

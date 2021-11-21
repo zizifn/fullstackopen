@@ -2,18 +2,8 @@ import { Router } from 'express';
 import { MongoNote } from '../db/mongodb.mjs';
 import { MongoUser } from '../db/user.mjs';
 import { info } from '../utils/logger.mjs';
-import JWT from 'jsonwebtoken';
-import { JWT_SECRET } from '../utils/config.mjs';
 
 const notesRouter = Router();
-
-const getTokenFrom = request => {
-    const authorization = request.get('authorization');
-    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-        return authorization.substring(7);
-    }
-    return null;
-};
 
 notesRouter.get('/', async (request, res) => {
 
@@ -31,12 +21,8 @@ notesRouter.post('/', async (req, res) => {
     if (!req.body.content) {
         res.status(400).send('empty request');
     }
-    const token = getTokenFrom(req);
-    const decodedToken = JWT.verify(token, JWT_SECRET);
-    if (!token || !decodedToken.id) {
-        return res.status(401).json({ error: 'token missing or invalid' });
-    }
-    const user = await MongoUser.findById(decodedToken.id);
+
+    const user = await MongoUser.findById(req.decodedToken.id);
     const note = new MongoNote({
         content: req.body.content,
         important: req.body.important || false,

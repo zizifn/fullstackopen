@@ -17,7 +17,10 @@
     "start": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds\""
   },
   "dependencies": {
-    "lit": "^2.0.2"
+    "lit": "^2.0.2",
+    "pwa-helpers": "^0.9.1",
+    "redux": "^4.1.2",
+    "reselect": "^4.1.4"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.15.8",
@@ -48,6 +51,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-workbox": "^6.2.0",
     "sass": "^1.43.4",
+    "ts-node": "^10.4.0",
     "tslib": "^2.3.1",
     "typescript": "^4.4.4"
   },
