@@ -16,7 +16,7 @@ RUN npm ci --only=production
 
 # Bundle app source
 COPY ./client/dist/* ./client/
-COPY ./backend/* ./
+COPY ./backend/. ./
 
 CMD [ "npm", "start" ]
 
