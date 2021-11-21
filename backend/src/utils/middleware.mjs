@@ -1,4 +1,6 @@
 import { info } from './logger.mjs';
+import JWT from 'jsonwebtoken';
+import { JWT_SECRET } from '../utils/config.mjs';
 
 const requestLogger = (req, res, next) => {
     // after response
@@ -36,11 +38,29 @@ const errorHandler = (error, req, res, next) => {
         //     }
         // }
         // return res.status(500).send(error);
-    } else {
-
+    } else if (error.name === 'ValidationError') {
+        return res.status(401).json({ error: 'token invaild' });
         // return res.status(500).send(error);
     }
     next(error);
 };
+const getTokenFrom = request => {
+    const authorization = request.get('authorization');
+    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+        return authorization.substring(7);
+    }
+    return null;
+};
 
-export { requestLogger, unknownHandler, errorHandler };
+const jwtvaildater = (req, res, next) => {
+    const token = getTokenFrom(req);
+    const decodedToken = JWT.verify(token, JWT_SECRET);
+    if (!token || !decodedToken.id) {
+        return res.status(401).json({ error: 'token missing or invalid' });
+    } else {
+        req.decodedToken = decodedToken;
+    }
+    next();
+};
+
+export { requestLogger, unknownHandler, errorHandler, jwtvaildater };

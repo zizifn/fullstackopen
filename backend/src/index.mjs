@@ -4,14 +4,12 @@ import { PORT } from './utils/config.mjs';
 import { notesRouter } from './controllers/note.mjs';
 import { usersRouter } from './controllers/users.mjs';
 import { loginRouter } from './controllers/login.mjs';
-import { requestLogger, unknownHandler, errorHandler } from './utils/middleware.mjs';
+import { requestLogger, unknownHandler, errorHandler, jwtvaildater } from './utils/middleware.mjs';
 import cors from 'cors';
 import { join, resolve } from 'path';
 import compression from 'compression';
 import mongoose from 'mongoose';
 import { MONGO_DB_URL } from './utils/config.mjs';
-
-import PORT1 from './utils/test.mjs';
 const app = express();
 config();
 
@@ -33,6 +31,7 @@ app.use(express.static(join(resolve(), 'src', 'client'), {
 // app.use(express.static('client'));
 
 app.use('/api/login', loginRouter);
+app.use(jwtvaildater);
 app.use('/api/notes', notesRouter);
 app.use('/api/users', usersRouter);
 

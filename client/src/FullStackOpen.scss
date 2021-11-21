@@ -1,5 +1,5 @@
 :host {
-  min-height: 100vh;
+  // min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -10,6 +10,29 @@
   margin: 0 auto;
   // text-align: center;
   background-color: var(--full-stack-open-background-color);
+}
+
+.login {
+  display: flex;
+  flex-direction: column;
+
+  .username {
+    display: flex;
+    label {
+      width: 5rem;
+    }
+  }
+  .pwd {
+    display: flex;
+    label {
+      width: 5rem;
+    }
+  }
+  .login-btn {
+    align-self: flex-start;
+    background-color: white;
+    border: 1px solid grey;
+  }
 }
 
 .title {
