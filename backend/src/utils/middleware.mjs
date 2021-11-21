@@ -1,4 +1,4 @@
-import { info } from './logger.mjs';
+import { info, error } from './logger.mjs';
 import JWT from 'jsonwebtoken';
 import { JWT_SECRET } from '../utils/config.mjs';
 
@@ -54,13 +54,27 @@ const getTokenFrom = request => {
 
 const jwtvaildater = (req, res, next) => {
     const token = getTokenFrom(req);
-    const decodedToken = JWT.verify(token, JWT_SECRET);
-    if (!token || !decodedToken.id) {
+    try {
+        const decodedToken = JWT.verify(token, JWT_SECRET);
+        if (!token || !decodedToken.id) {
+            return res.status(401).json({ error: 'token missing or invalid' });
+        } else {
+            req.decodedToken = decodedToken;
+        }
+    } catch (err) {
+        error(err);
         return res.status(401).json({ error: 'token missing or invalid' });
-    } else {
-        req.decodedToken = decodedToken;
     }
     next();
 };
+const asyncWrapper = (fn) => {
+    return async (req, res, next) => {
+        try {
+            await fn(req, res, next);
+        } catch (error) {
+            next(error);
+        }
+    };
+};
 
-export { requestLogger, unknownHandler, errorHandler, jwtvaildater };
+export { requestLogger, unknownHandler, errorHandler, jwtvaildater, asyncWrapper };

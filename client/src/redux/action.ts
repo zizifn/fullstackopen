@@ -3,7 +3,7 @@ export const updateTodoStatus = (todo: { todo: string, complete: boolean }) => (
     todo
 });
 
-export const updateComplete = (result: boolean) => ({
+export const updateComplete = (showComplete: boolean | null) => ({
     type: 'SHOW_COMPLETED',
-    showComplete: result
+    showComplete
 });

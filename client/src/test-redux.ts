@@ -7,11 +7,11 @@ import { updateComplete, updateTodoStatus } from './redux/action.js';
 import { getVisibleTodosSelector } from './redux/selector.js';
 
 export class TestElement extends connect(counterStore)(LitElement) {
-
     static styles = css`
     .complete {
-        display:flex;
-    }`;
+      display: flex;
+    }
+  `;
 
     @state()
     count: number = 0;
@@ -21,7 +21,7 @@ export class TestElement extends connect(counterStore)(LitElement) {
     todoItemComplete: boolean = false;
 
     @state()
-    todos: Array<{ todo: string, complete: boolean }> = [];
+    todos: Array<{ todo: string; complete: boolean }> = [];
 
     stateChanged(state1: any) {
         this.count = state1.count;
@@ -32,27 +32,55 @@ export class TestElement extends connect(counterStore)(LitElement) {
         return html` <div>
       <div>${this.count}</div>
       <div class="complete">
-      <input type="text" vaule=${this.todoItem} @change=${(e: Event) => { this.todoItem = (e.target as HTMLInputElement).value }} />
+      <input type="text" vaule=${this.todoItem} @change=${(e: Event) => {
+                this.todoItem = (e.target as HTMLInputElement).value;
+            }} />
           <label for="complete">complete</label>
           <input type="checkbox" id="complete" @change=${(e: any) => {
                 this.todoItemComplete = e.target.checked;
             }}>
         </div>
-            <button @click=${() => counterStore.dispatch(updateTodoStatus({ todo: this.todoItem, complete: this.todoItemComplete }))}>
+            <button @click=${() =>
+                counterStore.dispatch(
+                    updateTodoStatus({
+                        todo: this.todoItem,
+                        complete: this.todoItemComplete,
+                    })
+                )}>
                 add todo </button>
                 <div div class="todo" >
                     ${repeat(
-                this.todos,
-                (todo, index) => html` <li>${index}: ${todo.todo} ${todo.complete}</li> `
-            )}
+                    this.todos,
+                    (todo, index) =>
+                        html` <li>${index}: ${todo.todo} ${todo.complete}</li> `
+                )}
             <div class="filter">
-            <label for="complete">complete</label>
-          <input type="checkbox" id="showComplete" @change=${(e: any) => {
+            <input type="radio" id="showComplete" name="filter" value="complete"
+          @change=${(e: any) => {
                 const showComplete = e.target.checked;
                 if (showComplete) {
-                    counterStore.dispatch(updateComplete(showComplete));
+                    counterStore.dispatch(updateComplete(true));
+                }
+            }} >
+  <label for="showNotComplete">complete</label>
+  <input type="radio" id="showNotComplete" name="filter" value="notcomplete" @change=${(
+                e: any
+            ) => {
+                const showComplete = e.target.checked;
+                if (showComplete) {
+                    counterStore.dispatch(updateComplete(false));
                 }
             }}>
+  <label for="all">not complete</label>
+  <input type="radio" id="all" name="filter" value="all" @change=${(
+                e: any
+            ) => {
+                const showComplete = e.target.checked;
+                if (showComplete) {
+                    counterStore.dispatch(updateComplete(null));
+                }
+            }} checked>
+  <label for="showNotComplete">show all</label>
             </div>
         </div>
             </button>
