@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { until } from 'lit/directives/until.js';
+import { classMap } from 'lit/directives/class-map.js';
 import { styles } from './FullStackOpen.css';
 
 export class FullStackOpen extends LitElement {
@@ -9,10 +10,13 @@ export class FullStackOpen extends LitElement {
   static styles = styles;
 
   @state()
-  notes: Promise<Array<any>>;
+  notes: Promise<Array<any>> = Promise.resolve([]);
 
   @state()
   isImportent: boolean = false;
+
+  @state()
+  loginError: string = '';
 
   @query('#noteContent')
   noteContent!: HTMLInputElement;
@@ -83,6 +87,11 @@ export class FullStackOpen extends LitElement {
       // }
       localStorage.setItem('jwtToken', result.token)
       console.log(result);
+      this.loadNote();
+    } else {
+      console.error("login faild");
+      localStorage.removeItem('jwtToken');
+      this.loginError = "login error";
     }
 
   }
@@ -100,22 +109,31 @@ export class FullStackOpen extends LitElement {
     if (window.location.hostname === 'localhost') {
       this.hostName = 'http://localhost:3001';
     }
+    this.loadNote();
+  }
+
+  private loadNote() {
     this.notes = fetch(`${this.hostName}/api/notes`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
         }
       })
-      .then(res => res.json())
-      .then(notes =>
-        notes.map(
-          (note: { important: boolean; content: string }) =>
-            html`<li>
+      .then(res => {
+        if (res.status === 401) {
+          console.error("login faild");
+          localStorage.removeItem('jwtToken');
+          this.loginError = "login error";
+        }
+        return res.json();
+      })
+      .then(notes => notes.map(
+        (note: { important: boolean; content: string; }) => html`<li>
               ${note.important
-                ? html`<strong>${note.content}</strong>`
-                : `${note.content}`}
+            ? html`<strong>${note.content}</strong>`
+            : `${note.content}`}
             </li>`
-        )
+      )
       );
   }
 
@@ -143,7 +161,7 @@ export class FullStackOpen extends LitElement {
         </div>
         <div>
           <ul>
-            ${until(this.notes, html`<span>Loading...</span>`)}
+            ${until(this.notes, html`<span class=${classMap({ loginError: this.loginError || true })}>${this.loginError ? this.loginError : 'Loading...'}</span>`)}
           </ul>
         </div>
       </div>
