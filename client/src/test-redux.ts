@@ -8,8 +8,15 @@ import { getVisibleTodosSelector } from './redux/selector.js';
 
 export class TestElement extends connect(counterStore)(LitElement) {
     static styles = css`
+    .main{
+        margin-bottom: 20px;
+    }
     .complete {
       display: flex;
+    }
+    .todo {
+      border: 1px solid blue;
+      min-height: 20px;
     }
   `;
 
@@ -29,7 +36,7 @@ export class TestElement extends connect(counterStore)(LitElement) {
     }
 
     render() {
-        return html` <div>
+        return html` <div class="main">
       <div>${this.count}</div>
       <div class="complete">
       <input type="text" vaule=${this.todoItem} @change=${(e: Event) => {
@@ -48,12 +55,12 @@ export class TestElement extends connect(counterStore)(LitElement) {
                     })
                 )}>
                 add todo </button>
-                <div div class="todo" >
+                <div class="todo" >
                     ${repeat(
                     this.todos,
                     (todo, index) =>
                         html` <li>${index}: ${todo.todo} ${todo.complete}</li> `
-                )}
+                )}</div>
             <div class="filter">
             <input type="radio" id="showComplete" name="filter" value="complete"
           @change=${(e: any) => {
@@ -82,7 +89,6 @@ export class TestElement extends connect(counterStore)(LitElement) {
             }} checked>
   <label for="showNotComplete">show all</label>
             </div>
-        </div>
             </button>
             </div>`;
     }
