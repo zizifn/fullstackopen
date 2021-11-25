@@ -6,6 +6,49 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #print {
+                visibility: visible;
+            }
+        }
+
+        .popup {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99999;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            display: none;
+        }
+
+        .popup.show {
+            display: flex;
+        }
+
+        .popup .content {
+            min-width: 100px;
+            max-width: 400px;
+            min-height: 100px;
+            background: #fff;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
 </head>
 
 <body>
@@ -13,6 +56,49 @@
         <label for="test1">username</label>
         <input id="test1" type="text">
     </div>
+    <select name="test" id="test-select">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+    </select>
+
+    <div class="popup" id="popup">
+        <div class="content">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa debitis maxime consequatur eligendi laborum,
+            quas
+            qui voluptate, nostrum magni vel reiciendis necessitatibus tempora libero at ea. Rerum ratione est adipisci!
+            <button id="agree">agree</button>
+            <button id="disagree">disagree</button>
+
+        </div>
+
+    </div>
+
+    <script>
+        const agreeBtn = document.getElementById('agree');
+        const disagreeBtn = document.getElementById('disagree');
+
+        const popup = document.getElementById('popup');
+        const select = document.getElementById('test-select');
+        let previusValue = '';
+        select.addEventListener('focus', (e) => {
+            previusValue = e.target.value;
+        });
+        select.addEventListener('change', (event) => {
+            popup.classList.add('show');
+            // alert(event.target.value);
+            console.log(event.target.value);
+            // previusValue = event.target.value;
+        });
+        agreeBtn.addEventListener('click', () => {
+            popup.classList.remove('show');
+        });
+        disagreeBtn.addEventListener('click', () => {
+            popup.classList.remove('show');
+            select.value = previusValue;
+        });
+    </script>
 
 </body>
 

@@ -10,7 +10,7 @@
     "test": "tsc && wtr --coverage",
     "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\"",
     "build": "rimraf dist && npm run build:style && tsc && rollup -c rollup.config.js && npm run analyze -- --exclude dist",
-    "build:style": "node  ./scripts/sass-to-lit-css/index.js src/FullStackOpen.scss",
+    "build:style": "node  ./scripts/sass-to-lit-css/index.js src/FullStackOpen.scss && node  ./scripts/sass-to-lit-css/index.js src/login/login.scss",
     "build:style:watch": "nodemon  -e scss --exec \"npm run build:style\" ",
     "start:build": "web-dev-server --root-dir dist --app-index index.html --open",
     "analyze": "cem analyze --litelement",
@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "lit": "^2.0.2",
+    "lodash": "^4.17.21",
     "pwa-helpers": "^0.9.1",
     "redux": "^4.1.2",
     "reselect": "^4.1.4"

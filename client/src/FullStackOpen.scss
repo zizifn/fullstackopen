@@ -16,6 +16,10 @@
   display: flex;
   flex-direction: column;
 
+  .notshow {
+    display: none;
+  }
+
   .username {
     display: flex;
     label {
