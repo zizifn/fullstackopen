@@ -2,9 +2,12 @@ import { LitElement, html, css } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { until } from 'lit/directives/until.js';
 import { classMap } from 'lit/directives/class-map.js';
+import { connect } from 'pwa-helpers';
 import { styles } from './FullStackOpen.css';
+import { fullStackOpenStore, LoginInfo } from './redux/fullstackopen/reducer.js';
+import { getHostNameSelector, isLoginSelector } from './redux/fullstackopen/selector.js';
 
-export class FullStackOpen extends LitElement {
+export class FullStackOpen extends connect(fullStackOpenStore)(LitElement) {
   @property({ type: String }) title = 'My app';
 
   static styles = styles;
@@ -25,9 +28,8 @@ export class FullStackOpen extends LitElement {
 
   hostName = '';
 
-  userName = '';
-
-  pwd = '';
+  @state()
+  isLogin: boolean = true;
 
   private setImportent(e: Event) {
     this.isImportent = !this.isImportent;
@@ -66,75 +68,55 @@ export class FullStackOpen extends LitElement {
     }
   }
 
-  private async login() {
-    console.log('username', this.userName);
-    console.log('pwd', this.pwd);
-
-    const loginResp = await fetch(`${this.hostName}/api/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        username: this.userName,
-        password: this.pwd
-      })
-    });
-    if (loginResp.ok) {
-      const result = await loginResp.json();
-      // const jwtToken = {
-      //   token: result.token
-      // }
-      localStorage.setItem('jwtToken', result.token)
-      console.log(result);
-      this.loadNote();
-    } else {
-      console.error("login faild");
-      localStorage.removeItem('jwtToken');
-      this.loginError = "login error";
-    }
-
-  }
-
-  updateUserName(e: Event) {
-    this.userName = (e.target as HTMLInputElement).value;
-  }
-
-  updatePwd(e: Event) {
-    this.pwd = (e.target as HTMLInputElement).value;
-  }
-
   constructor() {
     super();
     if (window.location.hostname === 'localhost') {
-      this.hostName = 'http://localhost:3001';
+      this.hostName = 'http://localhost:8080';
+      fullStackOpenStore.dispatch({
+        type: 'UPDATE_CONFIG_HOSTNAME',
+        payload: 'http://localhost:8080'
+      });
     }
+
     this.loadNote();
   }
 
-  private loadNote() {
-    this.notes = fetch(`${this.hostName}/api/notes`,
+  stateChanged(fullStackOpenStoreParm: any) {
+    this.hostName = getHostNameSelector(fullStackOpenStoreParm);
+    this.isLogin = isLoginSelector(fullStackOpenStoreParm);
+
+    if (this.isLogin === true) {
+      this.loadNote();
+    }
+  }
+
+  private async loadNote() {
+    const noteResp = await fetch(`${this.hostName}/api/notes`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
         }
-      })
-      .then(res => {
-        if (res.status === 401) {
-          console.error("login faild");
-          localStorage.removeItem('jwtToken');
-          this.loginError = "login error";
-        }
-        return res.json();
-      })
-      .then(notes => notes.map(
-        (note: { important: boolean; content: string; }) => html`<li>
-              ${note.important
-            ? html`<strong>${note.content}</strong>`
-            : `${note.content}`}
-            </li>`
-      )
-      );
+      });
+    if (noteResp.status === 401) {
+      console.error("login faild");
+      localStorage.removeItem('jwtToken');
+      this.loginError = "login error";
+      fullStackOpenStore.dispatch({
+        type: 'UPDATE_LOGIN_INFO',
+        payload: {
+          isLogin: false
+        } as LoginInfo
+      });
+      return;
+    }
+    const noteResult = await noteResp.json();
+    this.notes = noteResult.map(
+      (note: { important: boolean; content: string; }) => html`<li>
+            ${note.important
+          ? html`<strong>${note.content}</strong>`
+          : `${note.content}`}
+          </li>`
+    );
   }
 
   render() {
@@ -142,16 +124,8 @@ export class FullStackOpen extends LitElement {
       <div class="title">
         <p>Notes</p>
       </div>
-      <div class="login">
-        <div class="username">
-          <label for="username">username</label>
-          <input id="username" type="text" vaule=${this.userName} @change=${this.updateUserName} />
-        </div>
-        <div class="pwd">
-          <label for="pwd">password</label>
-          <input type="password" id="pwd" vaule=${this.pwd} @change=${this.updatePwd} />
-        </div>
-        <button class="login-btn" @click=${this.login} >login</button>
+      <div class=${classMap({ login: true })}>
+        <full-stack-login class=${classMap({ notshow: this.isLogin })}></full-stack-login>
       </div>
       <div class="info">
         <div>
@@ -161,7 +135,7 @@ export class FullStackOpen extends LitElement {
         </div>
         <div>
           <ul>
-            ${until(this.notes, html`<span class=${classMap({ loginError: this.loginError || true })}>${this.loginError ? this.loginError : 'Loading...'}</span>`)}
+            ${until(this.notes, html`<span>'Loading...'</span>`)}
           </ul>
         </div>
       </div>

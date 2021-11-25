@@ -38,8 +38,8 @@ const errorHandler = (error, req, res, next) => {
         //     }
         // }
         // return res.status(500).send(error);
-    } else if (error.name === 'ValidationError') {
-        return res.status(401).json({ error: 'token invaild' });
+    } else if (error.name === 'ValidationError' || error.name === 'AuthorizationError') {
+        return res.status(401).json({ error: error.message });
         // return res.status(500).send(error);
     }
     next(error);

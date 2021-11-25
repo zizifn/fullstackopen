@@ -9,6 +9,11 @@ usersRouter.get('/', async (req, res) => {
     res.json(users);
 });
 
+usersRouter.get('/:userName', async (req, res) => {
+    const users = await MongoUser.findOne({ username: req.params.userName }).populate('notes', { content: 1, date: 1, important: true });
+    res.json(users);
+});
+
 usersRouter.post('/', async (req, res) => {
     const body = req.body;
 

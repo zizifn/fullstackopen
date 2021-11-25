@@ -2,18 +2,28 @@ import { Router } from 'express';
 import { MongoNote } from '../db/mongodb.mjs';
 import { MongoUser } from '../db/user.mjs';
 import { info } from '../utils/logger.mjs';
+import { AuthorizationError } from '../model/error.model.mjs';
 
 const notesRouter = Router();
 
-notesRouter.get('/', async (request, res) => {
-
-    MongoNote.find({}).populate('user', { username: 1, name: 1 }).then(
-        resp => {
-            res.json(resp);
-        }
-    ).catch(error => {
-        res.status(500).send(error);
-    });
+notesRouter.get('/', async (request, res, next) => {
+    const user = await MongoUser.findById(request.decodedToken.id);
+    console.log(user);
+    if (!user?._id) {
+        return next(new AuthorizationError('User not found'));
+    }
+    // console.log(user._id.toString());
+    MongoNote.find({
+        'user': user._id.toString()
+    })
+        .populate('user', { username: 1, name: 1 })
+        .then(
+            resp => {
+                res.json(resp);
+            }
+        ).catch(error => {
+            res.status(500).send(error);
+        });
 
 });
 
