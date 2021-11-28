@@ -65,6 +65,9 @@ jobs:
           # 这是为了heroku，注意前缀有个HD，这是为了告诉heroku-deploy，这些变量需要传入到container 中。
           HD_MONGODB_URI: ${{ secrets.MONGODB_URI }} # UUID for v2ray user, 为了安全，一定要放入github action token中
           HD_JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          HD_AUTHING_FULLSTACKOPEN_APPID: ${{ secrets.AUTHING_FULLSTACKOPEN_APPID }}
+          HD_AUTHING_FULLSTACKOPEN_CLIENT_SECRET: ${{ secrets.AUTHING_FULLSTACKOPEN_CLIENT_SECRET }}
+          HD_AUTHING_REDIRECT_URI: ${{ secrets.AUTHING_REDIRECT_URI }}
           NODE_ENV: production
           SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
       - name: scale up/down
