@@ -1,11 +1,15 @@
-import { createSelector } from 'reselect';
+/* eslint-disable import/order */
 import { FullStackOpenState } from './reducer.js';
+import { createSelector } from 'reselect';
 
 const getConfigSelector = (state: FullStackOpenState) => state.config;
 const getLoginInfoSelector = (state: FullStackOpenState) => state.loginInfo;
+const getAuthingSelector = (state: FullStackOpenState) => state.config.authing;
 
+export const getLoginUrlSelector = createSelector(getAuthingSelector, (authing) => authing?.loginUrl || '');
 export const getHostNameSelector = createSelector(getConfigSelector, (config) => config.hostName || '');
-export const isLoginSelector = createSelector(getLoginInfoSelector, (config) => config.isLogin !== false);
+export const isLoginSelector = createSelector(getLoginInfoSelector, (config) => config.isLogin);
+export const getUserInfo = createSelector(getLoginInfoSelector, (loginInfo) => loginInfo);
 
 
 // Selectors (1)

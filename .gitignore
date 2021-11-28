@@ -106,3 +106,5 @@ dist
 **/.env
 
 **/.npmrc
+client/Results: fullstackopen.notes.json
+client/Results: fullstackopen.users.json

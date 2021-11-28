@@ -1,14 +1,10 @@
-import mongoose from 'mongoose';
-import { config } from 'dotenv';
 import { MONGO_DB_URL } from '../utils/config.mjs';
+import { config } from 'dotenv';
+import mongoose from 'mongoose';
 import mongooseUniqueValidator from 'mongoose-unique-validator';
-
-
 config();
-
-
 const userSchema = new mongoose.Schema({
-    username: {
+    userid: {
         type: String,
         unique: true,
         required: true
@@ -32,10 +28,9 @@ userSchema.set('toJSON', {
         delete returnedObject.passwordHash;
     }
 });
-userSchema.plugin(mongooseUniqueValidator);
+// userSchema.plugin(mongooseUniqueValidator);
 
 const User = mongoose.model('User', userSchema);
-
 
 export { User as MongoUser };
 

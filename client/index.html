@@ -6,6 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="Description" content="Put your description here.">
   <base href="/">
+  <script src="https://cdn.jsdelivr.net/npm/@authing/native-js-ui-components"></script>
+
+  <!-- CSS 文件 -->
+  <link href="https://cdn.jsdelivr.net/npm/@authing/native-js-ui-components/lib/index.min.css" rel="stylesheet">
+  </link>
 
   <style>
     html,
@@ -16,6 +21,16 @@
       background-color: #ededed;
     }
   </style>
+  <!-- <script>
+    // eslint-disable-next-line no-undef
+    const guard = new AuthingNativeJsUIComponents.AuthingGuard('619ddd69dc964a797191d905')
+
+    // 事件监听
+    guard.on('load', (authClient) => console.log(authClient))
+    guard.on('login', (user) => {
+      console.log(user)
+    })
+  </script> -->
   <script>
     window.process = {
       env: {
@@ -27,6 +42,7 @@
 </head>
 
 <body>
+  <div id="wxqrcode"></div>
   <full-stack-open></full-stack-open>
   <div style="display: none;">
     <test-element></test-element>

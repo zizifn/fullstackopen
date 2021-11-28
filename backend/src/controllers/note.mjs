@@ -1,13 +1,12 @@
-import { Router } from 'express';
+import { AuthorizationError } from '../model/error.model.mjs';
 import { MongoNote } from '../db/mongodb.mjs';
 import { MongoUser } from '../db/user.mjs';
+import { Router } from 'express';
 import { info } from '../utils/logger.mjs';
-import { AuthorizationError } from '../model/error.model.mjs';
-
 const notesRouter = Router();
 
 notesRouter.get('/', async (request, res, next) => {
-    const user = await MongoUser.findById(request.decodedToken.id);
+    const user = await MongoUser.findOne({ userid: request.decodedToken.sub });
     console.log(user);
     if (!user?._id) {
         return next(new AuthorizationError('User not found'));
@@ -29,10 +28,12 @@ notesRouter.get('/', async (request, res, next) => {
 
 notesRouter.post('/', async (req, res) => {
     if (!req.body.content) {
-        res.status(400).send('empty request');
+        return res.status(400).send('empty request');
     }
+    // eslint-disable-next-line no-useless-catch
+    //.findOne({ userid: sub });
 
-    const user = await MongoUser.findById(req.decodedToken.id);
+    const user = await MongoUser.findOne({ userid: req.decodedToken.sub });
     const note = new MongoNote({
         content: req.body.content,
         important: req.body.important || false,
@@ -43,7 +44,6 @@ notesRouter.post('/', async (req, res) => {
 
     user.notes = user.notes.concat(savedNote._id);
     await user.save();
-
     res.json(savedNote);
 
 });

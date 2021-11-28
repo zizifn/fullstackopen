@@ -1,10 +1,12 @@
-import nodeResolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
+import { generateSW } from 'rollup-plugin-workbox';
 import html from '@web/rollup-plugin-html';
 import { importMetaAssets } from '@web/rollup-plugin-import-meta-assets';
-import { terser } from 'rollup-plugin-terser';
-import { generateSW } from 'rollup-plugin-workbox';
+import nodeResolve from '@rollup/plugin-node-resolve';
 import path from 'path';
+import { terser } from 'rollup-plugin-terser';
+
 function augmentWithDatePlugin() {
   return {
     name: 'augment-with-date',
@@ -31,11 +33,12 @@ export default {
     /** Enable using HTML as rollup entrypoint */
     html({
       minify: true,
-      injectServiceWorker: true,
+      injectServiceWorker: false,
       serviceWorkerPath: 'dist/sw.js',
     }),
     /** Resolve bare module imports */
     nodeResolve(),
+    commonjs(),
     /** Minify JS */
     terser(),
     /** Bundle assets references via import.meta.url */

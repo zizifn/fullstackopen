@@ -1,0 +1,43 @@
+:host {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99999;
+  height: 2rem;
+}
+
+.info-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.username {
+  position: relative;
+  .name-section {
+    height: 1.5rem;
+  }
+  .user-dropdown {
+    &.show {
+      display: block;
+    }
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    // border: 1px solid red;
+    right: 0;
+    ul {
+      padding: 0.625rem;
+      margin: 0;
+      list-style-type: none;
+      li {
+        white-space: nowrap;
+        padding: 0.3125rem;
+      }
+      li:hover {
+        background: #eff2f6;
+      }
+    }
+  }
+}
