@@ -10,7 +10,7 @@
     "test": "tsc && wtr --coverage",
     "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\"",
     "build": "rimraf dist && npm run build:style && tsc && rollup -c rollup.config.js && npm run analyze -- --exclude dist",
-    "build:style": "node  ./scripts/sass-to-lit-css/index.js src/FullStackOpen.scss && node  ./scripts/sass-to-lit-css/index.js src/login/login.scss",
+    "build:style": "node  ./scripts/sass-to-lit-css/index.js src/FullStackOpen.scss && node  ./scripts/sass-to-lit-css/index.js src/login/login.scss && node ./scripts/sass-to-lit-css/index.js src/info-bar/user-info.scss",
     "build:style:watch": "nodemon  -e scss --exec \"npm run build:style\" ",
     "start:build": "web-dev-server --root-dir dist --app-index index.html --open",
     "analyze": "cem analyze --litelement",
@@ -30,7 +30,10 @@
     "@open-wc/eslint-config": "^4.3.0",
     "@open-wc/testing": "next",
     "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-node-resolve": "^13.0.6",
+    "@types/node": "^16.11.10",
+    "@types/react": "^17.0.37",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "@web/dev-server": "^0.1.25",
@@ -70,6 +73,7 @@
       "@typescript-eslint/no-unused-vars": [
         "error"
       ],
+      "import/order": "off",
       "import/no-unresolved": "off",
       "import/extensions": [
         "error",

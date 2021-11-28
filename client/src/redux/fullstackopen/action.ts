@@ -1,11 +1,18 @@
-import { Config, LoginInfo } from "./reducer.js";
+import { Authing, LoginInfo } from "./reducer.js";
 
-export const updateConfig = (hostName: string) => ({
+export const updateConfigHostName = (hostName: string) => ({
     type: 'UPDATE_CONFIG_HOSTNAME',
     payload: hostName
 });
-
-export const updateLoginInfo = (loginInfo: LoginInfo) => ({
-    type: 'UPDATE_LOGIN_INFO',
-    payload: loginInfo
+export const updateConfigAuth = (authing: Authing) => ({
+    type: 'UPDATE_CONFIG_AUTH',
+    payload: authing
 });
+
+export const updateLoginInfo = (loginInfo: LoginInfo) => {
+    console.log('');
+    return {
+        type: 'UPDATE_LOGIN_INFO',
+        payload: loginInfo
+    }
+};

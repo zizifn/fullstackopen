@@ -1,11 +1,14 @@
-import { LitElement, html, css } from 'lit';
+import { Authing, LoginInfo, fullStackOpenStore } from './redux/fullstackopen/reducer.js';
+/* eslint-disable import/order */
+import { LitElement, css, html } from 'lit';
+import { getHostNameSelector, getLoginUrlSelector, isLoginSelector } from './redux/fullstackopen/selector.js';
 import { property, query, state } from 'lit/decorators.js';
-import { until } from 'lit/directives/until.js';
+import { updateConfigAuth, updateConfigHostName, updateLoginInfo } from './redux/fullstackopen/action.js';
+
 import { classMap } from 'lit/directives/class-map.js';
 import { connect } from 'pwa-helpers';
 import { styles } from './FullStackOpen.css';
-import { fullStackOpenStore, LoginInfo } from './redux/fullstackopen/reducer.js';
-import { getHostNameSelector, isLoginSelector } from './redux/fullstackopen/selector.js';
+import { until } from 'lit/directives/until.js';
 
 export class FullStackOpen extends connect(fullStackOpenStore)(LitElement) {
   @property({ type: String }) title = 'My app';
@@ -31,6 +34,8 @@ export class FullStackOpen extends connect(fullStackOpenStore)(LitElement) {
   @state()
   isLogin: boolean = true;
 
+  logingUrl: string = '';
+
   private setImportent(e: Event) {
     this.isImportent = !this.isImportent;
   }
@@ -46,6 +51,7 @@ export class FullStackOpen extends connect(fullStackOpenStore)(LitElement) {
         body: JSON.stringify(note),
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
         },
       });
       if (resp.ok) {
@@ -72,13 +78,46 @@ export class FullStackOpen extends connect(fullStackOpenStore)(LitElement) {
     super();
     if (window.location.hostname === 'localhost') {
       this.hostName = 'http://localhost:8080';
-      fullStackOpenStore.dispatch({
-        type: 'UPDATE_CONFIG_HOSTNAME',
-        payload: 'http://localhost:8080'
-      });
+      fullStackOpenStore.dispatch(updateConfigHostName('http://localhost:8080'));
     }
+    this.loadConfig();
+  }
 
-    this.loadNote();
+  private async loadConfig() {
+    const configResp = await fetch(`${this.hostName}/api/config`);
+    const config = await configResp.json();
+    fullStackOpenStore.dispatch(updateConfigAuth({
+      loginUrl: `${config.loginUrl}`,
+      sessionEndUrl: config.sessionEndUrl
+    } as Authing));
+    this.loadUser();
+  }
+
+  private async loadUser() {
+    const userResp = await fetch(`${this.hostName}/api/users`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+        }
+      });
+    if (userResp.status === 401) {
+      console.error("login faild");
+      localStorage.removeItem('jwtToken');
+      this.loginError = "login error";
+      fullStackOpenStore.dispatch(updateLoginInfo({
+        isLogin: false
+      } as LoginInfo));
+
+      return;
+    }
+    const userResult = await userResp.json();
+    if (userResult) {
+      fullStackOpenStore.dispatch(updateLoginInfo({
+        isLogin: true,
+        userId: userResult.userid,
+        userName: userResult.name
+      } as LoginInfo));
+    }
   }
 
   stateChanged(fullStackOpenStoreParm: any) {
@@ -121,11 +160,14 @@ export class FullStackOpen extends connect(fullStackOpenStore)(LitElement) {
 
   render() {
     return html`
+      <div class="userInfo">
+        <full-stack-user-info></full-stack-user-info>
+      </div>
       <div class="title">
         <p>Notes</p>
       </div>
       <div class=${classMap({ login: true })}>
-        <full-stack-login class=${classMap({ notshow: this.isLogin })}></full-stack-login>
+        <full-stack-login class=${classMap({ notshow: this.isLogin !== false })}></full-stack-login>
       </div>
       <div class="info">
         <div>

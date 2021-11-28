@@ -1,10 +1,18 @@
 import { createStore } from "redux";
+
+interface Authing {
+    loginUrl?: string;
+    sessionEndUrl?: string;
+}
 interface Config {
     hostName?: string;
+    authing?: Authing;
+
 }
 
 interface LoginInfo {
     isLogin: boolean,
+    userId: string;
     userName: string,
     jwtToken: string;
 }
@@ -27,6 +35,15 @@ const fullStackOpenReducer = (state: FullStackOpenState = INIT_STATE, action: an
                 config: {
                     ...state.config,
                     hostName: action.payload
+                }
+            };
+            break;
+        case 'UPDATE_CONFIG_AUTH':
+            newState = {
+                ...state,
+                config: {
+                    ...state.config,
+                    authing: action.payload
                 }
             };
             break;
@@ -58,5 +75,6 @@ export {
     fullStackOpenStore,
     Config,
     FullStackOpenState,
-    LoginInfo
+    LoginInfo,
+    Authing
 };

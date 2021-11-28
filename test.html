@@ -6,6 +6,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/authing-js-sdk/build/browser/index.min.js"></script>
+
+    <script>
+        /** 你可以通过全局变量 Authing 获取 AuthenticationClient 和 ManagementClient */
+        var authing = new Authing.AuthenticationClient({
+            appId: '61a0e7bdc34cc1d3b781b9c4',
+            appHost: 'https://fullstackopen.authing.cn',
+            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MWEyNmFhMGRlYWE0MTNmZTMwZTc1MDAiLCJwaG9uZV9udW1iZXIiOm51bGwsInBob25lX251bWJlcl92ZXJpZmllZCI6ZmFsc2UsImJpcnRoZGF0ZSI6bnVsbCwiZmFtaWx5X25hbWUiOm51bGwsImdlbmRlciI6IlUiLCJnaXZlbl9uYW1lIjpudWxsLCJsb2NhbGUiOm51bGwsIm1pZGRsZV9uYW1lIjpudWxsLCJuYW1lIjpudWxsLCJuaWNrbmFtZSI6bnVsbCwicGljdHVyZSI6Imh0dHBzOi8vZmlsZXMuYXV0aGluZy5jby91c2VyLWNvbnRlbnRzLzYxOWRkZDY5Y2E1YjcxMTVjNTczZTZmZS9hdmF0YXIvMjc1OTliZjctMTQyNS00ZDY4LTk5NDYtMmMzYTBkZGMwMzMxLmpwZyIsInByZWZlcnJlZF91c2VybmFtZSI6bnVsbCwicHJvZmlsZSI6Imh0dHBzOi8vZ2l0aHViLmNvbS96aXppZm4iLCJ1cGRhdGVkX2F0IjoiMjAyMS0xMS0yN1QxNzo0NToyNi45MzVaIiwid2Vic2l0ZSI6bnVsbCwiem9uZWluZm8iOm51bGwsImVtYWlsIjpudWxsLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5vbmNlIjoiY2xVTHVhYzNjOSIsImF0X2hhc2giOiJENDFEeGljYXEtdWdOZjNfNHo5NVl3IiwiYXVkIjoiNjFhMGU3YmRjMzRjYzFkM2I3ODFiOWM0IiwiZXhwIjoxNjM5MjQ0ODA2LCJpYXQiOjE2MzgwMzUyMDYsImlzcyI6Imh0dHBzOi8vZnVsbHN0YWNrb3Blbi5hdXRoaW5nLmNuL29pZGMifQ.tOIFll_EXhVyY8521i7ZBbJKLoVpiwDOm-liXfKLon4"
+        })
+        const managementClient = new Authing.ManagementClient({
+            userPoolId: '619ddd69ca5b7115c573e6fe',
+            secret: '94aae5cd87372b16bb7f32d7ef3f560b',
+        })
+    </script>
 
     <style>
         @media print {

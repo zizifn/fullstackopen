@@ -1,19 +1,21 @@
-import { customElement } from 'lit/decorators/custom-element.js';
 import { LitElement, html } from 'lit';
-import { connect } from 'pwa-helpers';
-import { state } from 'lit/decorators.js';
 import {
-    fullStackOpenStore,
     LoginInfo,
+    fullStackOpenStore,
 } from '../redux/fullstackopen/reducer.js';
 import {
     getHostNameSelector,
+    getLoginUrlSelector,
     isLoginSelector,
 } from '../redux/fullstackopen/selector.js';
+
+import { connect } from 'pwa-helpers';
+import { customElement } from 'lit/decorators/custom-element.js';
+import { state } from 'lit/decorators.js';
 import { styles } from './login.css.js';
 
 @customElement('full-stack-login')
-export class FullStackOpen extends connect(fullStackOpenStore)(LitElement) {
+export class FullStackLogin extends connect(fullStackOpenStore)(LitElement) {
     static styles = styles;
 
     hostName: string = '';
@@ -25,9 +27,12 @@ export class FullStackOpen extends connect(fullStackOpenStore)(LitElement) {
     @state()
     isLogin: boolean = true;
 
+    logingUrl: string = '';
+
     stateChanged(fullStackOpenStoreParm: any) {
         this.hostName = getHostNameSelector(fullStackOpenStoreParm);
         this.isLogin = isLoginSelector(fullStackOpenStoreParm);
+        this.logingUrl = getLoginUrlSelector(fullStackOpenStoreParm);
     }
 
     private async login() {
@@ -70,6 +75,11 @@ export class FullStackOpen extends connect(fullStackOpenStore)(LitElement) {
         }
     }
 
+    private async loginAuthing() {
+        window.location.replace(this.logingUrl);
+    }
+
+
     render() {
         return html` <div class="login">
       <div class="username">
@@ -98,6 +108,7 @@ export class FullStackOpen extends connect(fullStackOpenStore)(LitElement) {
         />
       </div>
       <button class="login-btn" @click=${this.login}>login</button>
+      <button class="login-btn" @click=${this.loginAuthing}>login with authing</button>
       <div class="social-media">
       <button class="login-btn">github</button>
       <a href=${`https://github.com/login/oauth/authorize?scope=user&client_id=Iv1.1045dd5c49ad6688&redirect_uri=${this.hostName}/api/oauth/github/redirect`}>login with github</a>

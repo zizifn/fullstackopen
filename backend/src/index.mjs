@@ -1,16 +1,26 @@
-import express from 'express';
-import { PORT } from './utils/config.mjs';
-import { notesRouter } from './controllers/note.mjs';
-import { usersRouter } from './controllers/users.mjs';
-import { loginRouter } from './controllers/login.mjs';
-import { oauthRouter } from './controllers/oauth.mjs';
-import { requestLogger, unknownHandler, errorHandler, jwtvaildater } from './utils/middleware.mjs';
-import cors from 'cors';
-import { join, resolve } from 'path';
-import compression from 'compression';
-import mongoose from 'mongoose';
+// import musy before router import
+import 'express-async-errors';
+
 import { MONGO_DB_URL, NODE_ENV } from './utils/config.mjs';
+import { errorHandler, jwtvaildater, requestLogger, unknownHandler } from './utils/middleware.mjs';
+import { join, resolve } from 'path';
+
+import { PORT } from './utils/config.mjs';
+import compression from 'compression';
+import { configRouter } from './controllers/config.mjs';
+import cors from 'cors';
+import express from 'express';
+import { loginRouter } from './controllers/login.mjs';
+import mongoose from 'mongoose';
+import { notesRouter } from './controllers/note.mjs';
+import { oauthRouter } from './controllers/oauth.mjs';
+import { usersRouter } from './controllers/users.mjs';
+
 const app = express();
+
+// dns.setServers([
+//     '1.1.1.1'
+// ]);
 
 const corsOptions = {
     origin: 'http://localhost:8000',
@@ -33,7 +43,7 @@ app.set('views', join(resolve(), 'src/views'));
 app.set('view engine', 'hbs');
 
 // app.use(express.static('client'));
-
+app.use('/api/config', configRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/oauth', oauthRouter);
 app.use(jwtvaildater);

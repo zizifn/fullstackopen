@@ -1,6 +1,7 @@
-import { info, error } from './logger.mjs';
+import { JWT_SECRET, authingFullStackClientSecret } from '../utils/config.mjs';
+import { error, info } from './logger.mjs';
+
 import JWT from 'jsonwebtoken';
-import { JWT_SECRET } from '../utils/config.mjs';
 
 const requestLogger = (req, res, next) => {
     // after response
@@ -41,6 +42,9 @@ const errorHandler = (error, req, res, next) => {
     } else if (error.name === 'ValidationError' || error.name === 'AuthorizationError') {
         return res.status(401).json({ error: error.message });
         // return res.status(500).send(error);
+    } else if (error.name === 'MongoServerError' && error.code === 11000) {
+        // console.log(error);
+        return res.status(500).json({ error: error.message });
     }
     next(error);
 };
@@ -55,8 +59,10 @@ const getTokenFrom = request => {
 const jwtvaildater = (req, res, next) => {
     const token = getTokenFrom(req);
     try {
-        const decodedToken = JWT.verify(token, JWT_SECRET);
-        if (!token || !decodedToken.id) {
+        // const decodedToken = JWT.verify(token, JWT_SECRET);
+        // authing jwt token
+        const decodedToken = JWT.verify(token, authingFullStackClientSecret);
+        if (!token || !(decodedToken.id || decodedToken.sub)) {
             return res.status(401).json({ error: 'token missing or invalid' });
         } else {
             req.decodedToken = decodedToken;
